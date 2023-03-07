@@ -23,27 +23,31 @@ import os
 import logging
 import signal
 
-if __name__ == '__main__':
-    import inspect
-    file_path = os.path.dirname(os.path.realpath(inspect.getfile(inspect.currentframe())))
-    sys.path.insert(0, os.path.join(file_path, '../'))
+import inspect
+
+file_path = os.path.dirname(os.path.realpath(inspect.getfile(inspect.currentframe())))
+sys.path.insert(0, os.path.join(file_path, '../'))
 
 from shadowsocks import shell, daemon, eventloop, tcprelay, udprelay, \
     asyncdns, manager, common
 
+from log import get_logger
+
 
 def main():
+    logger = get_logger('server', 'ssrserver.log')
     shell.check_python()
 
     config = shell.get_config(False)
-
+    logger.info('config file: %s', config)
     shell.log_shadowsocks_version()
 
     daemon.daemon_exec(config)
 
     try:
         import resource
-        logging.info('current process RLIMIT_NOFILE resource: soft %d hard %d'  % resource.getrlimit(resource.RLIMIT_NOFILE))
+        logging.info(
+            'current process RLIMIT_NOFILE resource: soft %d hard %d' % resource.getrlimit(resource.RLIMIT_NOFILE))
     except ImportError:
         pass
 
@@ -102,11 +106,12 @@ def main():
             password = password_obfs
         a_config = config.copy()
         ipv6_ok = False
-        logging.info("server start with protocol[%s] password [%s] method [%s] obfs [%s] obfs_param [%s]" %
-                (protocol, password, method, obfs, obfs_param))
+        logger.info("server start with protocol[%s] password [%s] method [%s] obfs [%s] obfs_param [%s]" %
+                     (protocol, password, method, obfs, obfs_param))
         if 'server_ipv6' in a_config:
             try:
-                if len(a_config['server_ipv6']) > 2 and a_config['server_ipv6'][0] == "[" and a_config['server_ipv6'][-1] == "]":
+                if len(a_config['server_ipv6']) > 2 and a_config['server_ipv6'][0] == "[" and a_config['server_ipv6'][
+                    -1] == "]":
                     a_config['server_ipv6'] = a_config['server_ipv6'][1:-1]
                 a_config['server_port'] = int(port)
                 a_config['password'] = password
@@ -118,7 +123,7 @@ def main():
                 a_config['out_bind'] = bind
                 a_config['out_bindv6'] = bindv6
                 a_config['server'] = a_config['server_ipv6']
-                logging.info("starting server at [%s]:%d" %
+                logger.info("starting server at [%s]:%d" %
                              (a_config['server'], int(port)))
                 tcp_servers.append(tcprelay.TCPRelay(a_config, dns_resolver, False, stat_counter=stat_counter_dict))
                 udp_servers.append(udprelay.UDPRelay(a_config, dns_resolver, False, stat_counter=stat_counter_dict))
@@ -138,24 +143,27 @@ def main():
             a_config['obfs_param'] = obfs_param
             a_config['out_bind'] = bind
             a_config['out_bindv6'] = bindv6
-            logging.info("starting server at %s:%d" %
+            logger.info("starting server at %s:%d" %
                          (a_config['server'], int(port)))
             tcp_servers.append(tcprelay.TCPRelay(a_config, dns_resolver, False, stat_counter=stat_counter_dict))
             udp_servers.append(udprelay.UDPRelay(a_config, dns_resolver, False, stat_counter=stat_counter_dict))
         except Exception as e:
             if not ipv6_ok:
                 shell.print_exception(e)
-
+    logger.info('tcp_servers: %s',tcp_servers)
+    logger.info('udp_servers: %s',udp_servers)
     def run_server():
         def child_handler(signum, _):
-            logging.warn('received SIGQUIT, doing graceful shutting down..')
+            logger.warning('received SIGQUIT, doing graceful shutting down..')
             list(map(lambda s: s.close(next_tick=True),
                      tcp_servers + udp_servers))
+
         signal.signal(getattr(signal, 'SIGQUIT', signal.SIGTERM),
                       child_handler)
 
         def int_handler(signum, _):
             sys.exit(1)
+
         signal.signal(signal.SIGINT, int_handler)
 
         try:
@@ -191,6 +199,7 @@ def main():
                         except OSError:  # child may already exited
                             pass
                     sys.exit()
+
                 signal.signal(signal.SIGTERM, handler)
                 signal.signal(signal.SIGQUIT, handler)
                 signal.signal(signal.SIGINT, handler)
@@ -205,7 +214,7 @@ def main():
                 for child in children:
                     os.waitpid(child, 0)
         else:
-            logging.warn('worker is only available on Unix/Linux')
+            logger.warning('worker is only available on Unix/Linux')
             run_server()
     else:
         run_server()

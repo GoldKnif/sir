@@ -17,7 +17,7 @@
 from __future__ import absolute_import, division, print_function, \
     with_statement
 
-from ctypes import c_char_p, c_int, c_long, byref,\
+from ctypes import c_char_p, c_int, c_long, byref, \
     create_string_buffer, c_void_p
 
 from shadowsocks import common
@@ -73,6 +73,7 @@ def load_cipher(cipher_name):
         return cipher()
     return None
 
+
 def rand_bytes(length):
     if not loaded:
         load_openssl()
@@ -81,6 +82,7 @@ def rand_bytes(length):
     if r <= 0:
         raise Exception('RAND_bytes return error')
     return buf.raw
+
 
 class OpenSSLCrypto(object):
     def __init__(self, cipher_name, key, iv, op):
@@ -160,7 +162,6 @@ ciphers = {
 
 
 def run_method(method):
-
     cipher = OpenSSLCrypto(method, b'k' * 32, b'i' * 16, 1)
     decipher = OpenSSLCrypto(method, b'k' * 32, b'i' * 16, 0)
 

@@ -1,8 +1,8 @@
+# return key_list + ['plan'] # append the column name 'plan'
 def getKeys(key_list):
-	return key_list
-	#return key_list + ['plan'] # append the column name 'plan'
+    return key_list
+
 
 def isTurnOn(row):
-	return True
-	#return row['plan'] == 'B' # then judge here
-
+    return True
+# return row['plan'] == 'B' # then judge here
