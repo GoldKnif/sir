@@ -63,7 +63,7 @@ def main():
         udp_server.add_to_loop(loop)
 
         def handler(signum, _):
-            logging.warn('received SIGQUIT, doing graceful shutting down..')
+            logging.warning('received SIGQUIT, doing graceful shutting down..')
             tcp_server.close(next_tick=True)
             udp_server.close(next_tick=True)
 

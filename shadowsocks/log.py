@@ -20,7 +20,8 @@ def get_logger(name='my_logger', filename='test.log'):
     file_handler.setLevel(logging.INFO)
 
     # 创建格式器
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(filename)s:%(lineno)s %(message)s',
+                                  datefmt='%Y-%m-%d %H:%M:%S')
 
     # 将格式器添加到处理程序中
     console_handler.setFormatter(formatter)
