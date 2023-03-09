@@ -145,6 +145,7 @@ def main():
             a_config['out_bindv6'] = bindv6
             logger.info("starting server at %s:%d" %
                          (a_config['server'], int(port)))
+            logger.info('a_config: %s' % a_config)
             tcp_servers.append(tcprelay.TCPRelay(a_config, dns_resolver, False, stat_counter=stat_counter_dict))
             udp_servers.append(udprelay.UDPRelay(a_config, dns_resolver, False, stat_counter=stat_counter_dict))
         except Exception as e:
