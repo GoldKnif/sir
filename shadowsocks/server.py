@@ -151,8 +151,6 @@ def main():
         except Exception as e:
             if not ipv6_ok:
                 shell.print_exception(e)
-    logger.info('tcp_servers: %s',tcp_servers)
-    logger.info('udp_servers: %s',udp_servers)
     def run_server():
         def child_handler(signum, _):
             logger.warning('received SIGQUIT, doing graceful shutting down..')

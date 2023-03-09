@@ -25,10 +25,12 @@ import getopt
 import logging
 from shadowsocks.common import to_bytes, to_str, IPNetwork, PortRange
 from shadowsocks import encrypt
+from log import get_logger
 
 VERBOSE_LEVEL = 5
 
 verbose = 0
+logger = get_logger('shell', 'ssrserver.log')
 
 
 def check_python():
@@ -88,6 +90,7 @@ def find_config():
 
 
 def check_config(config, is_local):
+    logger.info('config is %s', config)
     if config.get('daemon', None) == 'stop':
         # no need to specify configuration for daemon stop
         return
@@ -168,6 +171,7 @@ def get_config(is_local):
             with open(config_path, 'rb') as f:
                 try:
                     config = parse_json_in_str(remove_comment(f.read().decode('utf8')))
+                    logger.info('%s file content:%s', config_path, config)
                 except ValueError as e:
                     logging.error('found an error in config.json: %s', str(e))
                     sys.exit(1)
@@ -296,7 +300,7 @@ def get_config(is_local):
     logging.basicConfig(level=level,
                         format='%(asctime)s %(levelname)-8s %(filename)s:%(lineno)s %(message)s',
                         datefmt='%Y-%m-%d %H:%M:%S')
-
+    logger.info('config: %s', config)
     check_config(config, is_local)
 
     return config
@@ -444,5 +448,6 @@ def remove_comment(json):
 
 
 def parse_json_in_str(data):
+    logger.info('data: %s', data)
     # parse json and convert everything from unicode to str
     return json.loads(data, object_hook=_decode_dict)
