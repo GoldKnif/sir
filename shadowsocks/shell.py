@@ -112,7 +112,7 @@ def check_config(config, is_local):
     if 'server_port' in config and type(config['server_port']) != list:
         config['server_port'] = int(config['server_port'])
 
-    if config.get('local_address', '') in [b'0.0.0.0']:
+    if config.get('local_address', '') in ['0.0.0.0']:
         logging.warning('warning: local set to listen on 0.0.0.0, it\'s not safe')
     if config.get('server', '') in ['127.0.0.1', 'localhost']:
         logging.warning('warning: server set to listen on %s:%s, are you sure?' %
@@ -123,7 +123,7 @@ def check_config(config, is_local):
     if config.get('timeout', 300) > 600:
         logging.warning('warning: your timeout %d seems too long' %
                         int(config.get('timeout')))
-    if config.get('password') in [b'mypassword']:
+    if config.get('password') in ['mypassword']:
         logging.error('DON\'T USE DEFAULT PASSWORD! Please change it in your '
                       'config.json!')
         sys.exit(1)

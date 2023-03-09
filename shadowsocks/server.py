@@ -40,7 +40,7 @@ def main():
     shell.check_python()
 
     config = shell.get_config(False)
-    logger.info('config file: %s', config)
+    logger.info('config: %s', config)
     shell.log_shadowsocks_version()
 
     daemon.daemon_exec(config)
@@ -79,6 +79,7 @@ def main():
     else:
         stat_counter_dict = {}
     port_password = config['port_password']
+    logger.info('port_password:%s', port_password)
     config_password = config.get('password', 'm')
     del config['port_password']
     for port, password_obfs in port_password.items():
@@ -128,7 +129,7 @@ def main():
                             (a_config['server'], int(port)))
                 tcp_servers.append(tcprelay.TCPRelay(a_config, dns_resolver, False, stat_counter=stat_counter_dict))
                 udp_servers.append(udprelay.UDPRelay(a_config, dns_resolver, False, stat_counter=stat_counter_dict))
-                if a_config['server_ipv6'] == b"::":
+                if a_config['server_ipv6'] == "::":
                     ipv6_ok = True
             except Exception as e:
                 shell.print_exception(e)
