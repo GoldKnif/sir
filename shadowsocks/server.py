@@ -23,10 +23,11 @@ import os
 import logging
 import signal
 
-import inspect
+if __name__ == '__main__':
+    import inspect
 
-file_path = os.path.dirname(os.path.realpath(inspect.getfile(inspect.currentframe())))
-sys.path.insert(0, os.path.join(file_path, '../'))
+    file_path = os.path.dirname(os.path.realpath(inspect.getfile(inspect.currentframe())))
+    sys.path.insert(0, os.path.join(file_path, '../'))
 
 from shadowsocks import shell, daemon, eventloop, tcprelay, udprelay, \
     asyncdns, manager, common
@@ -107,7 +108,7 @@ def main():
         a_config = config.copy()
         ipv6_ok = False
         logger.info("server start with protocol[%s] password [%s] method [%s] obfs [%s] obfs_param [%s]" %
-                     (protocol, password, method, obfs, obfs_param))
+                    (protocol, password, method, obfs, obfs_param))
         if 'server_ipv6' in a_config:
             try:
                 if len(a_config['server_ipv6']) > 2 and a_config['server_ipv6'][0] == "[" and a_config['server_ipv6'][
@@ -124,7 +125,7 @@ def main():
                 a_config['out_bindv6'] = bindv6
                 a_config['server'] = a_config['server_ipv6']
                 logger.info("starting server at [%s]:%d" %
-                             (a_config['server'], int(port)))
+                            (a_config['server'], int(port)))
                 tcp_servers.append(tcprelay.TCPRelay(a_config, dns_resolver, False, stat_counter=stat_counter_dict))
                 udp_servers.append(udprelay.UDPRelay(a_config, dns_resolver, False, stat_counter=stat_counter_dict))
                 if a_config['server_ipv6'] == b"::":
@@ -144,13 +145,14 @@ def main():
             a_config['out_bind'] = bind
             a_config['out_bindv6'] = bindv6
             logger.info("starting server at %s:%d" %
-                         (a_config['server'], int(port)))
+                        (a_config['server'], int(port)))
             logger.info('a_config: %s' % a_config)
             tcp_servers.append(tcprelay.TCPRelay(a_config, dns_resolver, False, stat_counter=stat_counter_dict))
             udp_servers.append(udprelay.UDPRelay(a_config, dns_resolver, False, stat_counter=stat_counter_dict))
         except Exception as e:
             if not ipv6_ok:
                 shell.print_exception(e)
+
     def run_server():
         def child_handler(signum, _):
             logger.warning('received SIGQUIT, doing graceful shutting down..')
