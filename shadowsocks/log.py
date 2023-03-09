@@ -3,6 +3,8 @@
 import logging
 import logging.handlers
 
+maxBytes = 1 << 20  # 1M
+
 
 def get_logger(name='my_logger', filename='test.log'):
     # 创建日志记录器
@@ -14,7 +16,7 @@ def get_logger(name='my_logger', filename='test.log'):
     console_handler.setLevel(logging.DEBUG)
 
     # 创建文件处理程序
-    file_handler = logging.handlers.RotatingFileHandler(filename, maxBytes=1024, backupCount=7)
+    file_handler = logging.handlers.RotatingFileHandler(filename, maxBytes=maxBytes, backupCount=7)
     file_handler.setLevel(logging.INFO)
 
     # 创建格式器
